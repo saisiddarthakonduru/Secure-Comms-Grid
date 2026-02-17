@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Secure Email Infrastructure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #f59e0b; /* Amber/Gold for military feel */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Custom class for visual feedback */
+        .border-green-500 {
+            border-color: #10B981 !important; /* Tailwind green-500 */
+            transition: border-color 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        
+        <header class="text-center mb-10 border-b border-yellow-700 pb-4">
+            <h1 class="text-3xl md:text-5xl font-bold text-yellow-500 tracking-wider">SECURE COMMS GRID</h1>
+            <p class="text-lg text-gray-400 mt-2">Blockchain & Cybersecurity Prototype: E2EE and Digital Signatures</p>
+        </header>
+
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl mb-10">
+            <h2 class="text-2xl font-semibold mb-4 text-yellow-500">1. Key Generation & Blockchain Register (User Identity)</h2>
+            <p class="text-sm text-gray-400 mb-4">Simulates registering public keys (for Encryption and Signing) on an immutable decentralized ledger.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="user_id" class="block text-sm font-medium mb-1 text-gray-300">Your Military ID/Email:</label>
+                    <input type="text" id="user_id" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:outline-none" placeholder="commander@base.mil">
+                </div>
+                <div>
+                    <label for="gen_pass" class="block text-sm font-medium mb-1 text-gray-300">Password (Protect Private Keys):</label>
+                    <input type="password" id="gen_pass" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:outline-none" placeholder="Top-Secret-Pass-123">
+                </div>
+                <div class="flex items-end">
+                    <button id="generateBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition duration-200 shadow-lg">
+                        <span id="genSpinner" class="spinner mr-3 hidden"></span>
+                        GENERATE & REGISTER KEYS
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-6 border-t border-gray-700 pt-4">
+                <h3 class="text-lg font-semibold text-gray-300 mb-2">Simulated Blockchain Key Register:</h3>
+                <pre id="keyRegisterDisplay" class="bg-gray-900 text-green-400 p-3 rounded-lg text-xs overflow-x-auto min-h-[50px]">Status: No keys registered yet.</pre>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="flex flex-col gap-8">
+                <section class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-white">2. Encrypt & Sign (Send Message)</h2>
+                    
+                    <div class="mb-4">
+                        <label for="recipient_id" class="block text-sm font-medium mb-1 text-gray-300">Recipient Military ID:</label>
+                        <input type="text" id="recipient_id" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="colonel@hq.mil">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="subject_in" class="block text-sm font-medium mb-1 text-gray-300">Subject (Signed):</label>
+                        <input type="text" id="subject_in" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Urgent: Mission Delta Status Update">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="message_in" class="block text-sm font-medium mb-1 text-gray-300">Secret Message (E2EE):</label>
+                        <textarea id="message_in" rows="5" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="The satellite launch window is confirmed for 0400Z."></textarea>
+                    </div>
+                    
+                    <button id="sendBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition duration-200 shadow-md">
+                        <span id="sendSpinner" class="spinner mr-3 hidden"></span>
+                        Send Encrypted & Signed Message
+                    </button>
+                    
+                    <div class="mt-6 border-t border-gray-700 pt-4">
+                        <label for="transmission_out" class="block text-sm font-medium mb-1 text-gray-300">Encrypted Transmission (For Manual Paste/Debug):</label>
+                        <textarea id="transmission_out" rows="8" class="w-full p-2 rounded bg-gray-700 text-gray-300 font-mono text-xs border border-gray-600" readonly placeholder="Base64 encoded JSON containing ciphertext and digital signature..."></textarea>
+                    </div>
+                </section>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <section class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-white">3. Decrypt & Verify (Receive Message)</h2>
+                    
+                    <div class="mb-4">
+                        <label for="recipient_private_key_pass" class="block text-sm font-medium mb-1 text-gray-300">Your Private Key Password:</label>
+                        <input type="password" id="recipient_private_key_pass" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="Password you used in Step 1">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="transmission_in" class="block text-sm font-medium mb-1 text-gray-300">Encrypted Transmission:</label>
+                        <textarea id="transmission_in" rows="8" class="w-full p-2 rounded bg-gray-700 text-white font-mono text-xs border border-gray-600 focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="Paste the encrypted JSON from the sender here..."></textarea>
+                    </div>
+                    
+                    <button id="receiveBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition duration-200 shadow-md">
+                        <span id="receiveSpinner" class="spinner mr-3 hidden"></span>
+                        Decrypt & Verify
+                    </button>
+                    
+                    <div class="mt-6 border-t border-gray-700 pt-4">
+                        <label class="block text-sm font-medium mb-1 text-gray-300">Decrypted Status:</label>
+                        <div id="decryption_status" class="p-3 rounded-lg font-bold bg-gray-700 min-h-[40px]">Awaiting message...</div>
+                        
+                        <label for="decrypted_subject" class="block text-sm font-medium mt-4 mb-1 text-gray-300">Subject:</label>
+                        <input type="text" id="decrypted_subject" class="w-full p-2 rounded bg-gray-700 text-green-300 border border-gray-600" readonly placeholder="[Decrypted Subject]">
+                        
+                        <label for="decrypted_message" class="block text-sm font-medium mt-4 mb-1 text-gray-300">Message Body:</label>
+                        <textarea id="decrypted_message" rows="5" class="w-full p-2 rounded bg-gray-700 text-green-300 border border-gray-600" readonly placeholder="[Decrypted Message]"></textarea>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-inner">
+            <h3 class="text-lg font-semibold text-yellow-500">System Log:</h3>
+            <pre id="statusLog" class="text-sm text-gray-400 whitespace-pre-wrap mt-2 h-32 overflow-y-auto"></pre>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL STATE & CRYPTO CONFIG ---
+        // Simulates the decentralized key register (the blockchain's role in this context)
+        const keyRegister = {}; 
+        // Stores the current user's *unlocked* private keys
+        const privateKeyStore = {}; 
+
+        // RSA-OAEP for Encryption/Decryption
+        const RSA_ALGORITHM = {
+            name: "RSA-OAEP",
+            modulusLength: 2048,
+            publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+            hash: "SHA-256",
+        };
+        // ECDSA for Digital Signing/Verification
+        const ECDSA_ALGORITHM = {
+            name: "ECDSA",
+            namedCurve: "P-256",
+        };
+        const AES_ALGORITHM = "AES-GCM";
+        const PBKDF2_ALGORITHM = {
+            name: "PBKDF2",
+            hash: "SHA-256",
+            iterations: 100000,
+        };
+
+        // --- DOM Elements ---
+        const D = (id) => document.getElementById(id);
+        const generateBtn = D('generateBtn'), sendBtn = D('sendBtn'), receiveBtn = D('receiveBtn');
+        const userIDE = D('user_id'), genPassE = D('gen_pass'), recipientIDE = D('recipient_id');
+        const subjectInE = D('subject_in'), messageInE = D('message_in'), transmissionOutE = D('transmission_out');
+        const recipientPassE = D('recipient_private_key_pass'), transmissionInE = D('transmission_in');
+        const decryptedSubjectE = D('decrypted_subject'), decryptedMessageE = D('decrypted_message');
+        const decryptionStatusE = D('decryption_status'), keyRegisterDisplayE = D('keyRegisterDisplay');
+        const statusLogE = D('statusLog');
+        const spinE = (prefix) => D(`${prefix}Spinner`);
+
+
+        // --- Logging Utility ---
+        function logStatus(message, isError = false) {
+            console.log(message);
+            const color = isError ? 'text-red-400' : 'text-gray-300';
+            statusLogE.innerHTML = `<span class="${color}">[${isError ? 'ERROR' : 'INFO'}] ${new Date().toLocaleTimeString()} - ${message}</span>\n` + statusLogE.innerHTML;
+        }
+        function setLoading(button, spinner, isLoading) {
+            button.disabled = isLoading;
+            button.classList.toggle('opacity-75', isLoading);
+            spinner.classList.toggle('hidden', !isLoading);
+            // Hide the text content when loading (modified selector for your template)
+            const buttonTextSpan = button.querySelector('span:not(.spinner)');
+            if (buttonTextSpan) {
+                buttonTextSpan.style.display = isLoading ? 'none' : 'block';
+            }
+        }
+
+        // --- 1. Key Generation & Register (simulated blockchain) ---
+        generateBtn.addEventListener('click', async () => {
+            const userId = userIDE.value.trim();
+            const password = genPassE.value;
+            if (!userId || password.length < 8) {
+                logStatus("Please enter a valid ID and a password of at least 8 characters.", true);
+                return;
+            }
+
+            setLoading(generateBtn, spinE('gen'), true);
+            logStatus(`Attempting to generate and register keys for ${userId}...`);
+
+            try {
+                // 1. Generate Encryption Key Pair (RSA-OAEP)
+                const encKeyPair = await crypto.subtle.generateKey(RSA_ALGORITHM, true, ["encrypt", "decrypt"]);
+                
+                // 2. Generate Signing Key Pair (ECDSA)
+                const signKeyPair = await crypto.subtle.generateKey(ECDSA_ALGORITHM, true, ["sign", "verify"]);
+
+                // 3. Export Public Keys (SPKI for RSA, JWK for ECDSA)
+                const pubEncKeyData = await crypto.subtle.exportKey("spki", encKeyPair.publicKey);
+                const pubSignKeyData = await crypto.subtle.exportKey("jwk", signKeyPair.publicKey);
+
+                // 4. Export Private Keys (PKCS8 for RSA, JWK for ECDSA)
+                const privEncKeyData = await crypto.subtle.exportKey("pkcs8", encKeyPair.privateKey);
+                const privSignKeyData = await crypto.subtle.exportKey("jwk", signKeyPair.privateKey);
+
+                // 5. Encrypt Private Keys with password for secure storage
+                const encryptedPrivEncKey = await encryptDataWithPassword(privEncKeyData, password);
+                // Note: privSignKeyData is an object, must be converted to ArrayBuffer
+                const encryptedPrivSignKey = await encryptDataWithPassword(strToArrBuf(JSON.stringify(privSignKeyData)), password);
+
+                // 6. Store keys locally (simulating a private device store)
+                privateKeyStore[userId] = { 
+                    enc: encryptedPrivEncKey, 
+                    sign: encryptedPrivSignKey 
+                };
+
+                // 7. Register Public Keys on the simulated Blockchain Register
+                keyRegister[userId] = {
+                    publicKey_ENC: arrBufToBase64(pubEncKeyData), // For others to encrypt to you
+                    publicKey_SIGN: pubSignKeyData,              // For others to verify your signature
+                    timestamp: new Date().toISOString()
+                };
+
+                logStatus(`SUCCESS! Keys generated and Public Keys registered to simulated Blockchain for ID: ${userId}`);
+                updateKeyRegisterDisplay();
+
+            } catch (err) {
+                logStatus(`Key generation or storage failed: ${err.message}`, true);
+            } finally {
+                setLoading(generateBtn, spinE('gen'), false);
+            }
+        });
+
+        function updateKeyRegisterDisplay() {
+            keyRegisterDisplayE.textContent = JSON.stringify(keyRegister, (key, value) => {
+                // Truncate long keys for cleaner display
+                if (typeof value === 'string' && value.length > 50) {
+                    return value.substring(0, 15) + '...' + value.substring(value.length - 15);
+                }
+                return value;
+            }, 2);
+        }
+
+        // --- 2. Send, Sign & Encrypt ---
+        sendBtn.addEventListener('click', async () => {
+            const senderId = userIDE.value.trim();
+            const recipientId = recipientIDE.value.trim();
+            const password = genPassE.value;
+            const message = messageInE.value;
+            const subject = subjectInE.value;
+
+            if (!senderId || !recipientId || !password || !message) {
+                logStatus("Sender ID, Recipient ID, Password, and Message are required.", true);
+                return;
+            }
+
+            setLoading(sendBtn, spinE('send'), true);
+            logStatus(`Preparing message from ${senderId} to ${recipientId}...`);
+
+            try {
+                // A. Retrieve Recipient's Public Encryption Key from the 'Blockchain'
+                const recipientKeys = keyRegister[recipientId];
+                if (!recipientKeys || !recipientKeys.publicKey_ENC) {
+                    throw new Error(`Recipient ID '${recipientId}' not found on Key Register. Please generate keys for the recipient.`);
+                }
+                const pubEncKey = await importPublicKey("spki", base64ToArrBuf(recipientKeys.publicKey_ENC), ["encrypt"]);
+                logStatus("Recipient Public Key retrieved and imported.");
+                
+                // B. Decrypt Sender's Private Signing Key
+                const senderEncryptedKeys = privateKeyStore[senderId];
+                if (!senderEncryptedKeys || !senderEncryptedKeys.sign) {
+                    throw new Error(`Sender ID '${senderId}' private keys not found in local store. Please generate your own keys.`);
+                }
+                const rawSignKeyData = await decryptKeyWithPassword(senderEncryptedKeys.sign, password);
+                // rawSignKeyData is an ArrayBuffer containing JWK JSON string
+                const privSignKey = await importPrivateKey("jwk", JSON.parse(arrBufToStr(rawSignKeyData)), ["sign"]);
+                logStatus("Sender Private Signing Key unlocked.");
+
+                // C. Message Data Preparation (Subject + Body)
+                const fullMessage = JSON.stringify({ subject, body: message });
+                const fullMessageArrBuf = strToArrBuf(fullMessage);
+
+                // D. Digital Sign (Authentication & Integrity)
+                const signature = await crypto.subtle.sign(
+                    { name: "ECDSA", hash: { name: "SHA-256" } },
+                    privSignKey,
+                    fullMessageArrBuf
+                );
+                logStatus("Message digitally signed.");
+
+                // E. Encryption (Secrecy)
+                const ciphertext = await crypto.subtle.encrypt(
+                    { name: "RSA-OAEP" },
+                    pubEncKey,
+                    fullMessageArrBuf
+                );
+                logStatus("Message encrypted.");
+
+                // F. Package for Transmission
+                const transmissionPackage = {
+                    sender: senderId,
+                    recipient: recipientId,
+                    ciphertext: arrBufToBase64(ciphertext),
+                    signature: arrBufToBase64(signature),
+                    timestamp: new Date().toISOString()
+                };
+
+                // Automatic sending to the receive box for demonstration
+                sendEncryptedMessageAutomatically(transmissionPackage); 
+                
+                // Display the package for debugging/manual testing
+                transmissionOutE.value = JSON.stringify(transmissionPackage, null, 2); 
+                logStatus("Transmission package created and automatically sent (simulated).", false); 
+
+            } catch (err) {
+                logStatus(`Send/Sign failed: ${err.message}`, true);
+                transmissionOutE.value = "";
+            } finally {
+                setLoading(sendBtn, spinE('send'), false);
+            }
+        });
+
+
+        // --- 3. Receive, Decrypt & Verify (UPDATED SECTION) ---
+        receiveBtn.addEventListener('click', async () => {
+            const password = recipientPassE.value;
+            let transmissionPackage;
+            decryptionStatusE.className = 'p-3 rounded-lg font-bold bg-gray-700 min-h-[40px] text-white';
+            decryptionStatusE.textContent = "Processing...";
+            decryptedSubjectE.value = "";
+            decryptedMessageE.value = "";
+
+            try {
+                transmissionPackage = JSON.parse(transmissionInE.value);
+            } catch (e) {
+                decryptionStatusE.className = 'p-3 rounded-lg font-bold bg-red-800 min-h-[40px] text-white';
+                decryptionStatusE.textContent = "ERROR: Invalid transmission format (not valid JSON).";
+                logStatus("Invalid transmission format.", true);
+                return;
+            }
+
+            setLoading(receiveBtn, spinE('receive'), true);
+            logStatus(`Attempting to decrypt and verify message from ${transmissionPackage.sender}...`);
+
+            try {
+                const recipientId = transmissionPackage.recipient;
+                const senderId = transmissionPackage.sender;
+                
+                // A. Decrypt Recipient's Private Encryption Key
+                const recipientEncryptedKeys = privateKeyStore[recipientId];
+                if (!recipientEncryptedKeys || !recipientEncryptedKeys.enc) {
+                    throw new Error(`Recipient ID '${recipientId}' private keys not found in local store.`);
+                }
+                const rawEncKeyData = await decryptKeyWithPassword(recipientEncryptedKeys.enc, password);
+                const privEncKey = await importPrivateKey("pkcs8", rawEncKeyData, ["decrypt"]);
+                logStatus("Private Encryption Key unlocked.");
+
+                // B. Decrypt Message (Secrecy)
+                const ciphertext = base64ToArrBuf(transmissionPackage.ciphertext);
+                const decryptedArrBuf = await crypto.subtle.decrypt(
+                    { name: "RSA-OAEP" },
+                    privEncKey,
+                    ciphertext
+                );
+                const decryptedFullMessage = arrBufToStr(decryptedArrBuf);
+                const messageObj = JSON.parse(decryptedFullMessage);
+                logStatus("Message decrypted successfully.");
+
+                // C. **AUTOMATIC** Import Sender's Public Signing Key from the 'Blockchain' (keyRegister)
+                const senderKeys = keyRegister[senderId];
+                if (!senderKeys || !senderKeys.publicKey_SIGN) {
+                    throw new Error(`Sender ID '${senderId}' Public SIGN Key not found on Key Register. Cannot verify signature.`);
+                }
+                const pubSignKey = await importPublicKey("jwk", senderKeys.publicKey_SIGN, ["verify"]);
+                logStatus("Sender Public Signing Key retrieved automatically from the register and imported.", false);
+
+
+                // D. Verify Signature (Authentication & Integrity)
+                const signature = base64ToArrBuf(transmissionPackage.signature);
+                const isVerified = await crypto.subtle.verify(
+                    { name: "ECDSA", hash: { name: "SHA-256" } },
+                    pubSignKey,
+                    signature,
+                    decryptedArrBuf // Verification must be against the decrypted message buffer!
+                );
+
+                if (isVerified) {
+                    decryptionStatusE.className = 'p-3 rounded-lg font-bold bg-green-700 min-h-[40px] text-white';
+                    decryptionStatusE.textContent = `SUCCESS! Authenticated sender: ${senderId}. Message Integrity: OK.`;
+                    decryptedSubjectE.value = messageObj.subject;
+                    decryptedMessageE.value = messageObj.body;
+                    logStatus(`Verification successful. Message from ${senderId} is authentic and untampered.`, false);
+                } else {
+                    decryptionStatusE.className = 'p-3 rounded-lg font-bold bg-red-700 min-h-[40px] text-white';
+                    decryptionStatusE.textContent = `WARNING! Sender verification FAILED. Message may be compromised!`;
+                    logStatus("Verification FAILED. Identity or integrity compromise suspected. This often means the sender generated new keys after signing.", true);
+                }
+
+            } catch (err) {
+                decryptionStatusE.className = 'p-3 rounded-lg font-bold bg-red-800 min-h-[40px] text-white';
+                decryptionStatusE.textContent = `ERROR: Decryption/Verification failed. Check password or Key Register status.`;
+                logStatus(`Receive/Verify failed: ${err.message}`, true);
+            } finally {
+                setLoading(receiveBtn, spinE('receive'), false);
+            }
+        });
+
+        // --- SIMULATED AUTOMATIC SENDING ---
+        function sendEncryptedMessageAutomatically(transmissionData) {
+            
+            // Simulates the end-to-end transfer by automatically populating the Decrypt input box.
+            
+            const transmissionInE = D('transmission_in'); 
+            const packageString = JSON.stringify(transmissionData, null, 2);
+
+            transmissionInE.value = packageString;
+            
+            logStatus(`AUTOMATION SUCCESS: Encrypted package for ${transmissionData.recipient} automatically transferred to the Decrypt field.`, false);
+            
+            // Add visual feedback to the receiving box
+            transmissionInE.classList.add('border-green-500');
+            setTimeout(() => transmissionInE.classList.remove('border-green-500'), 2000); 
+        }
+
+
+        // --- CRYPTO HELPER FUNCTIONS ---
+
+        async function encryptDataWithPassword(data, password) {
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const baseKey = await crypto.subtle.importKey("raw", strToArrBuf(password), "PBKDF2", false, ["deriveKey"]);
+            const aesKey = await crypto.subtle.deriveKey({ ...PBKDF2_ALGORITHM, salt: salt }, baseKey, { name: AES_ALGORITHM, length: 256 }, true, ["encrypt"]);
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const encryptedData = await crypto.subtle.encrypt({ name: AES_ALGORITHM, iv: iv }, aesKey, data);
+            return {
+                salt: arrBufToBase64(salt),
+                iv: arrBufToBase64(iv),
+                ciphertext: arrBufToBase64(encryptedData)
+            };
+        }
+
+        async function decryptKeyWithPassword(encryptedKeyObj, password) {
+            const salt = base64ToArrBuf(encryptedKeyObj.salt);
+            const iv = base64ToArrBuf(encryptedKeyObj.iv);
+            const ciphertext = base64ToArrBuf(encryptedKeyObj.ciphertext);
+
+            const baseKey = await crypto.subtle.importKey("raw", strToArrBuf(password), "PBKDF2", false, ["deriveKey"]);
+            const aesKey = await crypto.subtle.deriveKey({ ...PBKDF2_ALGORITHM, salt: salt }, baseKey, { name: AES_ALGORITHM, length: 256 }, true, ["decrypt"]);
+            
+            return await crypto.subtle.decrypt({ name: AES_ALGORITHM, iv: iv }, aesKey, ciphertext);
+        }
+
+        async function importPublicKey(format, keyData, usages) {
+            const algo = format === "spki" ? RSA_ALGORITHM : ECDSA_ALGORITHM;
+            return await crypto.subtle.importKey(format, keyData, algo, true, usages);
+        }
+
+        async function importPrivateKey(format, keyData, usages) {
+            const algo = format === "pkcs8" ? RSA_ALGORITHM : ECDSA_ALGORITHM;
+            return await crypto.subtle.importKey(format, keyData, algo, true, usages);
+        }
+
+        // --- CONVERSION UTILITIES ---
+        function arrBufToBase64(buffer) {
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
+        }
+        function base64ToArrBuf(base64) {
+            const binary_string = atob(base64);
+            const len = binary_string.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+        function strToArrBuf(str) { return new TextEncoder().encode(str).buffer; }
+        function arrBufToStr(buffer) { return new TextDecoder().decode(buffer); }
+    </script>
+</body>
+</html>
